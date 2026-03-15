@@ -1,6 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 
 const AddNeedPost = () => {
+
+  // handle thumblain photo
+  const [preview , setPreview] = useState(null);
+  const handleThumb = (e)=>{
+    const file = e.target.files[0];
+    if(file){
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+  const removePhoto = ()=>{
+    setPreview(null);
+  }
+
+
+  const handleAddNeedPost = (e) =>{
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const initalData = Object.fromEntries(formData.entries());
+    console.log(initalData);
+  };
   return (
     <div className="h-full bg-gray-900">
       <div className="flex min-h-full h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -16,7 +36,7 @@ const AddNeedPost = () => {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form onSubmit={handleAddNeedPost} className="space-y-6">
             {/* Title */}
             <div>
               <label
@@ -89,19 +109,40 @@ const AddNeedPost = () => {
                   Upload Thumblain
                 </label>
 
+                 {!preview && (
                 <label
                   className="mt-2 flex items-center justify-center w-full h-10
           rounded-md bg-white/5 hover:bg-white/10 cursor-pointer
           text-gray-300 text-sm"
                 >
-                  Choose thumblain
+                  Choose Photo
                   <input
                     type="file"
                     name="photo"
                     accept="image/*"
+                    onChange={handleThumb}
                     className="hidden"
                   />
                 </label>
+              )}
+              {preview && (
+                <div className="mt-3 flex items-center gap-4">
+                  <img
+                    src={preview}
+                    alt="preview"
+                    className="w-20 h-20 object-cover rounded-md"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={removePhoto}
+                    className="px-3 py-1 text-xs rounded-md
+            bg-red-500/20 hover:bg-red-500/30 text-red-300"
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
               </div>
               {/* Deadline */}
               <div>
