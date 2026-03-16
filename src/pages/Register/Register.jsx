@@ -1,16 +1,60 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
+import AuthContext from "../../context/AuthContext/AuthContext";
+import Swal from "sweetalert2";
 
 const Register = () => {
-  const [preview, setPreview] = useState(null);
-  const handlePhoto = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
+  const { createUser } = useContext(AuthContext);
+  // const [preview, setPreview] = useState(null);
+
+  // handle registration
+  const handleRegister = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const initialData = Object.fromEntries(formData.entries());
+    console.log(initialData);
+
+    const { email, password } = initialData;
+
+    // create user
+    createUser(email, password)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+
+    // fetching info
+    fetch("http://localhost:5000/users", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(initialData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+         if (data.insertedId) {
+                  Swal.fire({
+                    title: '<span style="color:#FFFFFF">Welcome!<br/>Account Created!</span>',
+                    icon: "success",
+                    draggable: true,
+                    background: "#0F172A",
+                  });
+                }
+      });
   };
-  const removePhoto = () => {
-    setPreview(null);
-  };
+
+  // handle image
+  // const handlePhoto = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     setPreview(URL.createObjectURL(file));
+  //   }
+  // };
+  // const removePhoto = () => {
+  //   setPreview(null);
+  // };
+
   return (
     <div className="h-full bg-gray-900">
       <div className="flex min-h-full h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -26,7 +70,7 @@ const Register = () => {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form onSubmit={handleRegister} className="space-y-6">
             {/* name */}
             <div>
               <label
@@ -70,41 +114,16 @@ const Register = () => {
               <label className="block text-sm/6 font-medium text-gray-100">
                 Upload Photo
               </label>
-
-              {!preview && (
-                <label
-                  className="mt-2 flex items-center justify-center w-full h-10
-          rounded-md bg-white/5 hover:bg-white/10 cursor-pointer
-          text-gray-300 text-sm"
-                >
-                  Choose Photo
-                  <input
-                    type="file"
-                    name="photo"
-                    accept="image/*"
-                    onChange={handlePhoto}
-                    className="hidden"
-                  />
-                </label>
-              )}
-              {preview && (
-                <div className="mt-3 flex items-center gap-4">
-                  <img
-                    src={preview}
-                    alt="preview"
-                    className="w-20 h-20 object-cover rounded-md"
-                  />
-
-                  <button
-                    type="button"
-                    onClick={removePhoto}
-                    className="px-3 py-1 text-xs rounded-md
-            bg-red-500/20 hover:bg-red-500/30 text-red-300"
-                  >
-                    Remove
-                  </button>
-                </div>
-              )}
+               <div className="mt-2">
+                <input
+                  id="photo"
+                  name="photoURL"
+                  type="url"
+                  required
+                  autoComplete="photoURL"
+                  className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                />
+              </div>
             </div>
             {/* password */}
             <div>

@@ -5,9 +5,12 @@ import { RouterProvider } from 'react-router-dom'
 import { ThemeInit } from "../.flowbite-react/init";
 
 import router from './router/router'
+import AuthProvider from './context/AuthContext/AuthProvider';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-     <ThemeInit />
+     <AuthProvider>
+      <ThemeInit />
    <RouterProvider router={router} />
+     </AuthProvider>
   </StrictMode>,
 )

@@ -1,25 +1,52 @@
 import React, { useState } from "react";
+import Swal from "sweetalert2";
 
 const AddNeedPost = () => {
-
   // handle thumblain photo
-  const [preview , setPreview] = useState(null);
-  const handleThumb = (e)=>{
+  const [preview, setPreview] = useState(null);
+  const handleThumb = (e) => {
     const file = e.target.files[0];
-    if(file){
+    console.log(file);
+    if (file) {
       setPreview(URL.createObjectURL(file));
     }
   };
-  const removePhoto = ()=>{
+  const removePhoto = () => {
     setPreview(null);
-  }
+  };
 
-
-  const handleAddNeedPost = (e) =>{
+  // Handle Add post button
+  const handleAddNeedPost = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
+    console.log("Actual File Object:", formData.get("photo"));
     const initalData = Object.fromEntries(formData.entries());
     console.log(initalData);
+
+    const { ...restFormData } = initalData;
+
+    restFormData.description = restFormData.description.split("\n");
+    console.log(restFormData);
+
+    fetch("http://localhost:5000/jobs", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(restFormData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        if (data.insertedId) {
+          Swal.fire({
+            title: '<span style="color:#FFFFFF">Successfully posted!</span>',
+            icon: "success",
+            draggable: true,
+            background: "#0F172A",
+          });
+        }
+      });
   };
   return (
     <div className="h-full bg-gray-900">
@@ -39,10 +66,7 @@ const AddNeedPost = () => {
           <form onSubmit={handleAddNeedPost} className="space-y-6">
             {/* Title */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm/6 font-medium text-gray-100"
-              >
+              <label className="block text-sm/6 font-medium text-gray-100">
                 Title
               </label>
               <div className="mt-2">
@@ -60,42 +84,46 @@ const AddNeedPost = () => {
             <div className="grid grid-cols-1  md:flex md:justify-between md:items-center  ">
               {/* Category */}
               <div>
-                <label
-                  htmlFor="Category"
-                  className="block text-sm/6 font-medium text-gray-100"
-                >
+                <label className="block text-sm/6 font-medium text-gray-100">
                   Category
                 </label>
                 <div className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6">
-                  <select name="" id="" defaultValue="" className="bg-black">
+                  <select
+                    name="category"
+                    id=""
+                    defaultValue=""
+                    className="bg-black"
+                  >
                     <option value="" disabled>
                       select category
                     </option>
-                    <option value="">Healthcare</option>
-                    <option value="">Education</option>
-                    <option value="">Social Service</option>
-                    <option value="">Animal Welfare</option>
+                    <option>Healthcare</option>
+                    <option>Education</option>
+                    <option>Social Service</option>
+                    <option>Animal Welfare</option>
                   </select>
                 </div>
               </div>
               {/* Location
                */}
               <div>
-                <label
-                  htmlFor="location"
-                  className="block text-sm/6 font-medium text-gray-100"
-                >
+                <label className="block text-sm/6 font-medium text-gray-100">
                   Location
                 </label>
                 <div className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6">
-                  <select name="" id="" defaultValue="" className="bg-black">
+                  <select
+                    name="location"
+                    id=""
+                    defaultValue=""
+                    className="bg-black"
+                  >
                     <option value="" disabled>
                       select location
                     </option>
-                    <option value="">Dhaka</option>
-                    <option value="">Chittagong</option>
-                    <option value="">Cumilla</option>
-                    <option value="">Rajshahi</option>
+                    <option>Dhaka</option>
+                    <option>Chittagong</option>
+                    <option>Cumilla</option>
+                    <option>Rajshahi</option>
                   </select>
                 </div>
               </div>
@@ -109,7 +137,6 @@ const AddNeedPost = () => {
                   Upload Thumblain
                 </label>
 
-                 {!preview && (
                 <label
                   className="mt-2 flex items-center justify-center w-full h-10
           rounded-md bg-white/5 hover:bg-white/10 cursor-pointer
@@ -124,32 +151,29 @@ const AddNeedPost = () => {
                     className="hidden"
                   />
                 </label>
-              )}
-              {preview && (
-                <div className="mt-3 flex items-center gap-4">
-                  <img
-                    src={preview}
-                    alt="preview"
-                    className="w-20 h-20 object-cover rounded-md"
-                  />
 
-                  <button
-                    type="button"
-                    onClick={removePhoto}
-                    className="px-3 py-1 text-xs rounded-md
+                {preview && (
+                  <div className="mt-3 flex items-center gap-4">
+                    <img
+                      src={preview}
+                      alt="preview"
+                      className="w-20 h-20 object-cover rounded-md"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={removePhoto}
+                      className="px-3 py-1 text-xs rounded-md
             bg-red-500/20 hover:bg-red-500/30 text-red-300"
-                  >
-                    Remove
-                  </button>
-                </div>
-              )}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
               </div>
               {/* Deadline */}
               <div>
-                <label
-                  htmlFor="deadline"
-                  className="block text-sm/6 font-medium text-gray-100"
-                >
+                <label className="block text-sm/6 font-medium text-gray-100">
                   Deadline
                 </label>
                 <div className="mt-2">
@@ -167,10 +191,7 @@ const AddNeedPost = () => {
             <div className="sm:grid sm:grid-cols-1 md:flex md:justify-between md:items-center">
               {/* Organizer Name */}
               <div>
-                <label
-                  htmlFor="organizerName"
-                  className="block text-sm/6 font-medium text-gray-100"
-                >
+                <label className="block text-sm/6 font-medium text-gray-100">
                   Organizer Name
                 </label>
                 <div className="mt-2">
@@ -186,10 +207,7 @@ const AddNeedPost = () => {
               </div>
               {/* Organizer Email */}
               <div>
-                <label
-                  htmlFor="organizerEmail"
-                  className="block text-sm/6 font-medium text-gray-100"
-                >
+                <label className="block text-sm/6 font-medium text-gray-100">
                   Organizer Email
                 </label>
                 <div className="mt-2">
@@ -206,10 +224,7 @@ const AddNeedPost = () => {
             </div>
             {/* No. of volunteers needed */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm/6 font-medium text-gray-100"
-              >
+              <label className="block text-sm/6 font-medium text-gray-100">
                 No. of volunteers needed
               </label>
               <div className="mt-2">
@@ -226,16 +241,13 @@ const AddNeedPost = () => {
             </div>
             {/* Description  */}
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm/6 font-medium text-gray-100"
-              >
+              <label className="block text-sm/6 font-medium text-gray-100">
                 Description
               </label>
               <div className="mt-2 ">
                 <textarea
-                  name=""
-                  id=""
+                  name="description"
+                  id="description"
                   className="lg:col-span-4 min-h-20 block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6 "
                 ></textarea>
               </div>

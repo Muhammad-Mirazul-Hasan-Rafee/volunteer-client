@@ -1,6 +1,24 @@
-import React from "react";
+import React, { useContext } from "react";
+import AuthContext from "../../context/AuthContext/AuthContext";
 
 const Login = () => {
+  const {loginUser} = useContext(AuthContext);
+  // handle login
+  const handleLogin = (e)=>{
+    e.preventDefault();
+
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+      // user login
+  loginUser(email , password)
+  .then(data=> {
+    console.log('user logged in', data.user.email);
+  })
+  };
+
+
+
   return (
     <div className="h-full bg-gray-900">
       <div className="flex min-h-full h-full flex-col justify-center px-6 py-12 lg:px-8">
@@ -16,7 +34,7 @@ const Login = () => {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label
                 htmlFor="email"
