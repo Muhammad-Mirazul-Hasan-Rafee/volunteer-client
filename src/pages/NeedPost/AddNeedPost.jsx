@@ -2,38 +2,108 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 
 const AddNeedPost = () => {
-  // handle thumblain photo
-  const [preview, setPreview] = useState(null);
-  const handleThumb = (e) => {
-    const file = e.target.files[0];
-    console.log(file);
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
+  const [requirements, setRequirements] = useState(["", "", "", ""]);
+  const [responsibilities, setResponsibilities] = useState(["", "", "", ""]);
+
+  const [formData, setFormData] = useState({
+    title: "",
+    category: "",
+    location: "",
+    thumbnail: "",
+    deadline: "",
+    minSalary: "",
+    maxSalary: "",
+    salaryCurrency: "",
+    organizerName: "",
+    organizerEmail: "",
+    number: "",
+    description: "",
+  });
+
+  // Handle form input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    // console.log('Experiment values:' , name , value)
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
-  const removePhoto = () => {
-    setPreview(null);
+
+  // Requirements functions
+  const addRequirement = () => {
+    setRequirements([...requirements, ""]);
+  };
+
+  const updateRequirement = (index, value) => {
+    const updated = [...requirements];
+    updated[index] = value;
+    setRequirements(updated);
+  };
+
+  const removeRequirement = (index) => {
+    const updated = requirements.filter((_, i) => i !== index);
+    setRequirements(updated);
+  };
+
+  // Responsibilities functions
+  const addResponsibility = () => {
+    setResponsibilities([...responsibilities, ""]);
+  };
+
+  const updateResponsibility = (index, value) => {
+    const updated = [...responsibilities];
+    updated[index] = value;
+    setResponsibilities(updated);
+  };
+
+  const removeResponsibility = (index) => {
+    const updated = responsibilities.filter((_, i) => i !== index);
+    setResponsibilities(updated);
   };
 
   // Handle Add post button
   const handleAddNeedPost = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    console.log("Actual File Object:", formData.get("photo"));
-    const initalData = Object.fromEntries(formData.entries());
-    console.log(initalData);
 
-    const { ...restFormData } = initalData;
+    // Filter out empty requirements and responsibilities
+    const filteredRequirements = requirements.filter(
+      (req) => req.trim() !== ""
+    );
+    const filteredResponsibilities = responsibilities.filter(
+      (resp) => resp.trim() !== ""
+    );
 
-    restFormData.description = restFormData.description.split("\n");
-    console.log(restFormData);
+    // Prepare data for API
+    const postData = {
+      title: formData.title,
+      category: formData.category,
+      location: formData.location,
+      thumbnail: formData.thumbnail,
+      deadline: formData.deadline,
+      organizerName: formData.organizerName,
+      organizerEmail: formData.organizerEmail,
+      number: formData.number,
+      description: formData.description
+        .split("\n")
+        .filter((item) => item.trim() !== ""),
+      requirements: filteredRequirements,
+      responsibilities: filteredResponsibilities,
+      salary: {
+        min: formData.minSalary || null,
+        max: formData.maxSalary || null,
+        currency: formData.salaryCurrency || "BDT",
+      },
+    };
+
+    console.log("Submitting:", postData);
 
     fetch("http://localhost:5000/jobs", {
       method: "POST",
       headers: {
-        "content-type": "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(restFormData),
+      body: JSON.stringify(postData),
     })
       .then((res) => res.json())
       .then((data) => {
@@ -41,158 +111,372 @@ const AddNeedPost = () => {
         if (data.insertedId) {
           Swal.fire({
             title: '<span style="color:#FFFFFF">Successfully posted!</span>',
+            text: "Your volunteer post has been created successfully.",
             icon: "success",
             draggable: true,
             background: "#0F172A",
+            color: "#fff",
+            confirmButtonColor: "#3B82F6",
           });
+
+          // Reset form after successful submission
+          setFormData({
+            title: "",
+            category: "",
+            location: "",
+            thumbnail: "",
+            deadline: "",
+            minSalary: "",
+            maxSalary: "",
+            salaryCurrency: "",
+            organizerName: "",
+            organizerEmail: "",
+            number: "",
+            description: "",
+          });
+          setRequirements(["", "", "", ""]);
+          setResponsibilities(["", "", "", ""]);
         }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        Swal.fire({
+          title: "Error!",
+          text: "Something went wrong. Please try again.",
+          icon: "error",
+          background: "#0F172A",
+          color: "#fff",
+          confirmButtonColor: "#3B82F6",
+        });
       });
   };
+
   return (
-    <div className="h-full bg-gray-900">
-      <div className="flex min-h-full h-full flex-col justify-center px-6 py-12 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+    <div className="min-h-screen bg-slate-900">
+      <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
           <img
             alt="Your Company"
             src="https://tailwindcss.com/plus-assets/img/logos/mark.svg?color=indigo&shade=500"
             className="mx-auto h-10 w-auto"
           />
-          <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">
-            Add post for volunteer need
+          <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-white">
+            Add Post for Volunteer Need
           </h2>
+          <p className="mt-2 text-center text-sm text-slate-400">
+            Fill out the form below to create a new volunteer opportunity
+          </p>
         </div>
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-2xl">
           <form onSubmit={handleAddNeedPost} className="space-y-6">
             {/* Title */}
             <div>
-              <label className="block text-sm/6 font-medium text-gray-100">
-                Title
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-slate-200"
+              >
+                Title <span className="text-red-400">*</span>
               </label>
               <div className="mt-2">
                 <input
                   id="title"
                   name="title"
-                  type="title"
+                  type="text"
                   required
-                  autoComplete="title"
-                  className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                  value={formData.title}
+                  onChange={handleChange}
+                  placeholder="e.g., Healthcare Volunteer Needed"
+                  className="block w-full rounded-lg bg-slate-800/50 px-4 py-2.5 text-base text-white border border-slate-600 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm"
                 />
               </div>
             </div>
-            {/* ..................category and location........................ */}
-            <div className="grid grid-cols-1  md:flex md:justify-between md:items-center  ">
+
+            {/* Category and Location */}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {/* Category */}
               <div>
-                <label className="block text-sm/6 font-medium text-gray-100">
-                  Category
-                </label>
-                <div className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6">
-                  <select
-                    name="category"
-                    id=""
-                    defaultValue=""
-                    className="bg-black"
-                  >
-                    <option value="" disabled>
-                      select category
-                    </option>
-                    <option>Healthcare</option>
-                    <option>Education</option>
-                    <option>Social Service</option>
-                    <option>Animal Welfare</option>
-                  </select>
-                </div>
-              </div>
-              {/* Location
-               */}
-              <div>
-                <label className="block text-sm/6 font-medium text-gray-100">
-                  Location
-                </label>
-                <div className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6">
-                  <select
-                    name="location"
-                    id=""
-                    defaultValue=""
-                    className="bg-black"
-                  >
-                    <option value="" disabled>
-                      select location
-                    </option>
-                    <option>Dhaka</option>
-                    <option>Chittagong</option>
-                    <option>Cumilla</option>
-                    <option>Rajshahi</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* .........................Thumblain and Deadline....................................... */}
-            <div className="sm:grid sm:grid-cols-1 md:flex md:justify-between md:items-center">
-              {/* Thumbnail */}
-              <div>
-                <label className="block text-sm/6 font-medium text-gray-100">
-                  Upload Thumblain
-                </label>
-
                 <label
-                  className="mt-2 flex items-center justify-center w-full h-10
-          rounded-md bg-white/5 hover:bg-white/10 cursor-pointer
-          text-gray-300 text-sm"
+                  htmlFor="category"
+                  className="block text-sm font-medium text-slate-200"
                 >
-                  Choose Photo
-                  <input
-                    type="file"
-                    name="photo"
-                    accept="image/*"
-                    onChange={handleThumb}
-                    className="hidden"
-                  />
-                </label>
-
-                {preview && (
-                  <div className="mt-3 flex items-center gap-4">
-                    <img
-                      src={preview}
-                      alt="preview"
-                      className="w-20 h-20 object-cover rounded-md"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={removePhoto}
-                      className="px-3 py-1 text-xs rounded-md
-            bg-red-500/20 hover:bg-red-500/30 text-red-300"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                )}
-              </div>
-              {/* Deadline */}
-              <div>
-                <label className="block text-sm/6 font-medium text-gray-100">
-                  Deadline
+                  Category <span className="text-red-400">*</span>
                 </label>
                 <div className="mt-2">
-                  <input
-                    id="deadline"
-                    name="deadline"
-                    type="date"
+                  <select
+                    id="category"
+                    name="category"
                     required
-                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
-                  />
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="block w-full rounded-lg bg-slate-800/50 px-4 py-2.5 text-base text-white border border-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>
+                      Select category
+                    </option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Education">Education</option>
+                    <option value="Social Service">Social Service</option>
+                    <option value="Animal Welfare">Animal Welfare</option>
+                    <option value="Environment">Environment</option>
+                    <option value="Disaster Relief">Disaster Relief</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Location */}
+              <div>
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-medium text-slate-200"
+                >
+                  Location <span className="text-red-400">*</span>
+                </label>
+                <div className="mt-2">
+                  <select
+                    id="location"
+                    name="location"
+                    required
+                    value={formData.location}
+                    onChange={handleChange}
+                    className="block w-full rounded-lg bg-slate-800/50 px-4 py-2.5 text-base text-white border border-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>
+                      Select location
+                    </option>
+                    <option value="Dhaka">Dhaka</option>
+                    <option value="Chittagong">Chittagong</option>
+                    <option value="Cumilla">Cumilla</option>
+                    <option value="Rajshahi">Rajshahi</option>
+                    <option value="Khulna">Khulna</option>
+                    <option value="Sylhet">Sylhet</option>
+                    <option value="Barishal">Barishal</option>
+                    <option value="Rangpur">Rangpur</option>
+                  </select>
                 </div>
               </div>
             </div>
-            {/* Organizer name and email */}
-            <div className="sm:grid sm:grid-cols-1 md:flex md:justify-between md:items-center">
+
+            {/* Thumbnail URL */}
+            <div>
+              <label
+                htmlFor="thumbnail"
+                className="block text-sm font-medium text-slate-200"
+              >
+                Thumbnail URL <span className="text-red-400">*</span>
+              </label>
+              <div className="mt-2">
+                <input
+                  id="thumbnail"
+                  name="thumbnail"
+                  type="url"
+                  required
+                  value={formData.thumbnail}
+                  onChange={handleChange}
+                  placeholder="https://example.com/image.jpg"
+                  className="block w-full rounded-lg bg-slate-800/50 px-4 py-2.5 text-base text-white border border-slate-600 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Deadline */}
+            <div>
+              <label
+                htmlFor="deadline"
+                className="block text-sm font-medium text-slate-200"
+              >
+                Deadline <span className="text-red-400">*</span>
+              </label>
+              <div className="mt-2">
+                <input
+                  id="deadline"
+                  name="deadline"
+                  type="date"
+                  required
+                  value={formData.deadline}
+                  onChange={handleChange}
+                  className="block w-full rounded-lg bg-slate-800/50 px-4 py-2.5 text-base text-white border border-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm"
+                />
+              </div>
+            </div>
+
+            {/* Salary Section */}
+            <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-lg">💰</span>
+                <h3 className="text-base font-semibold text-white">
+                  Salary Information
+                </h3>
+                <span className="text-xs text-slate-400">(Optional)</span>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                {/* Minimum Salary */}
+                <div>
+                  <label
+                    htmlFor="minSalary"
+                    className="block text-sm font-medium text-slate-300"
+                  >
+                    Minimum Salary
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      id="minSalary"
+                      name="minSalary"
+                      type="number"
+                      min="0"
+                      step="1000"
+                      value={formData.minSalary}
+                      onChange={handleChange}
+                      placeholder="e.g., 25000"
+                      className="block w-full rounded-lg bg-slate-800/50 px-4 py-2 text-base text-white border border-slate-600 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Maximum Salary */}
+                <div>
+                  <label
+                    htmlFor="maxSalary"
+                    className="block text-sm font-medium text-slate-300"
+                  >
+                    Maximum Salary
+                  </label>
+                  <div className="mt-1">
+                    <input
+                      id="maxSalary"
+                      name="maxSalary"
+                      type="number"
+                      min="0"
+                      step="1000"
+                      value={formData.maxSalary}
+                      onChange={handleChange}
+                      placeholder="e.g., 50000"
+                      className="block w-full rounded-lg bg-slate-800/50 px-4 py-2 text-base text-white border border-slate-600 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Currency */}
+                <div>
+                  <label
+                    htmlFor="salaryCurrency"
+                    className="block text-sm font-medium text-slate-300"
+                  >
+                    Currency
+                  </label>
+                  <div className="mt-1">
+                    <select
+                      id="salaryCurrency"
+                      name="salaryCurrency"
+                      value={formData.salaryCurrency}
+                      onChange={handleChange}
+                      className="block w-full rounded-lg bg-slate-800/50 px-4 py-2 text-base text-white border border-slate-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm appearance-none cursor-pointer"
+                    >
+                      <option value="">Choose currency</option>
+                      <option value="BDT">BDT (৳)</option>
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GBP">GBP (£)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Requirements Section with Dynamic Fields */}
+            <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-lg">📋</span>
+                <h3 className="text-base font-semibold text-white">
+                  Requirements
+                </h3>
+                <span className="text-xs text-slate-400">(Optional)</span>
+              </div>
+
+              <div className="space-y-3">
+                {requirements.map((req, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={req}
+                      onChange={(e) => updateRequirement(index, e.target.value)}
+                      placeholder={`Requirement ${index + 1}`}
+                      className="flex-1 rounded-lg bg-slate-800/50 px-4 py-2 text-base text-white border border-slate-600 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm"
+                    />
+                    {requirements.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeRequirement(index)}
+                        className="px-3 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addRequirement}
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  + Add more requirements
+                </button>
+              </div>
+            </div>
+
+            {/* Responsibilities Section with Dynamic Fields */}
+            <div className="bg-slate-800/30 rounded-xl p-4 border border-slate-700">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-lg">✅</span>
+                <h3 className="text-base font-semibold text-white">
+                  Responsibilities
+                </h3>
+                <span className="text-xs text-slate-400">(Optional)</span>
+              </div>
+
+              <div className="space-y-3">
+                {responsibilities.map((resp, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      value={resp}
+                      onChange={(e) =>
+                        updateResponsibility(index, e.target.value)
+                      }
+                      placeholder={`Responsibility ${index + 1}`}
+                      className="flex-1 rounded-lg bg-slate-800/50 px-4 py-2 text-base text-white border border-slate-600 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm"
+                    />
+                    {responsibilities.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeResponsibility(index)}
+                        className="px-3 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addResponsibility}
+                  className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                >
+                  + Add more responsibilities
+                </button>
+              </div>
+            </div>
+
+            {/* Organizer Name and Email */}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {/* Organizer Name */}
               <div>
-                <label className="block text-sm/6 font-medium text-gray-100">
-                  Organizer Name
+                <label
+                  htmlFor="organizerName"
+                  className="block text-sm font-medium text-slate-200"
+                >
+                  Organizer Name <span className="text-red-400">*</span>
                 </label>
                 <div className="mt-2">
                   <input
@@ -200,15 +484,21 @@ const AddNeedPost = () => {
                     name="organizerName"
                     type="text"
                     required
-                    autoComplete="organizerName"
-                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                    value={formData.organizerName}
+                    onChange={handleChange}
+                    placeholder="Full name"
+                    className="block w-full rounded-lg bg-slate-800/50 px-4 py-2.5 text-base text-white border border-slate-600 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm"
                   />
                 </div>
               </div>
+
               {/* Organizer Email */}
               <div>
-                <label className="block text-sm/6 font-medium text-gray-100">
-                  Organizer Email
+                <label
+                  htmlFor="organizerEmail"
+                  className="block text-sm font-medium text-slate-200"
+                >
+                  Organizer Email <span className="text-red-400">*</span>
                 </label>
                 <div className="mt-2">
                   <input
@@ -216,47 +506,69 @@ const AddNeedPost = () => {
                     name="organizerEmail"
                     type="email"
                     required
-                    autoComplete="organizerEmail"
-                    className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                    value={formData.organizerEmail}
+                    onChange={handleChange}
+                    placeholder="email@example.com"
+                    className="block w-full rounded-lg bg-slate-800/50 px-4 py-2.5 text-base text-white border border-slate-600 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm"
                   />
                 </div>
               </div>
             </div>
-            {/* No. of volunteers needed */}
+
+            {/* Number of Volunteers Needed */}
             <div>
-              <label className="block text-sm/6 font-medium text-gray-100">
-                No. of volunteers needed
+              <label
+                htmlFor="number"
+                className="block text-sm font-medium text-slate-200"
+              >
+                Number of Volunteers Needed{" "}
+                <span className="text-red-400">*</span>
               </label>
               <div className="mt-2">
                 <input
                   id="number"
                   name="number"
-                  type="text"
-                  inputMode="numeric"
+                  type="number"
                   required
-                  autoComplete="number"
-                  className="block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6"
+                  min="1"
+                  value={formData.number}
+                  onChange={handleChange}
+                  placeholder="e.g., 5"
+                  className="block w-full rounded-lg bg-slate-800/50 px-4 py-2.5 text-base text-white border border-slate-600 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm"
                 />
               </div>
             </div>
-            {/* Description  */}
+
+            {/* Description */}
             <div>
-              <label className="block text-sm/6 font-medium text-gray-100">
-                Description
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-slate-200"
+              >
+                Description <span className="text-red-400">*</span>
               </label>
-              <div className="mt-2 ">
+              <div className="mt-2">
                 <textarea
-                  name="description"
                   id="description"
-                  className="lg:col-span-4 min-h-20 block w-full rounded-md bg-white/5 px-3 py-1.5 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm/6 "
+                  name="description"
+                  rows="6"
+                  required
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Describe the volunteer opportunity... (One item per line)"
+                  className="block w-full rounded-lg bg-slate-800/50 px-4 py-2.5 text-base text-white border border-slate-600 placeholder:text-slate-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all sm:text-sm resize-y"
                 ></textarea>
               </div>
+              <p className="mt-1 text-xs text-slate-400">
+                Tip: Write each point on a new line for better formatting
+              </p>
             </div>
 
+            {/* Submit Button */}
             <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-500 px-3 py-1.5 text-sm/6 font-semibold text-white hover:bg-indigo-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+                className="flex w-full justify-center rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 px-4 py-3 text-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 Add Post
               </button>

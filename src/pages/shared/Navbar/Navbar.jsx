@@ -9,13 +9,14 @@ import {
   MenuItems,
 } from "@headlessui/react";
 import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
+
 import AuthContext from "../../../context/AuthContext/AuthContext";
+import { Link } from "react-router-dom";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
-  { name: "All volunteer Need posts", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
+  { name: "All volunteer Need posts", href: "/allpost", current: false },
+  { name: "Volunteer Needs Now", href: "/neednow", current: false },
   { name: "Calendar", href: "#", current: false },
 ];
 
@@ -23,7 +24,15 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 const Navbar = () => {
-  const { user } = useContext(AuthContext);
+  const { user , logOutUser} = useContext(AuthContext);
+
+  // handle logout
+  const handleLogout = ()=>{
+    logOutUser()
+    .then(()=>{
+      console.log('user logged out!')
+    })
+  };
   return (
     <Disclosure as="nav" className="relative bg-gray-800">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -95,13 +104,13 @@ const Navbar = () => {
                       className="size-8 rounded-full bg-gray-800 outline -outline-offset-1 outline-white/10"
                     />
                   </MenuButton>
-                  <Link
-                    to="/logout"
+                  <button onClick={handleLogout}
+                    
                     className="text-gray-300 hover:bg-white/5 hover:text-white
                       rounded-md px-3 py-2 text-sm font-medium"
                   >
                     Logout
-                  </Link>
+                  </button>
                 </>
               ) : (
                 <>

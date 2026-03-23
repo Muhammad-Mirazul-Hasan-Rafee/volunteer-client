@@ -3,7 +3,7 @@ import AuthContext from "../../context/AuthContext/AuthContext";
 import Swal from "sweetalert2";
 
 const Register = () => {
-  const { createUser } = useContext(AuthContext);
+  const { createUser, googleLogin, githubLogin } = useContext(AuthContext);
   // const [preview, setPreview] = useState(null);
 
   // handle registration
@@ -33,14 +33,39 @@ const Register = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-         if (data.insertedId) {
-                  Swal.fire({
-                    title: '<span style="color:#FFFFFF">Welcome!<br/>Account Created!</span>',
-                    icon: "success",
-                    draggable: true,
-                    background: "#0F172A",
-                  });
-                }
+        if (data.insertedId) {
+          Swal.fire({
+            title:
+              '<span style="color:#FFFFFF">Welcome!<br/>Account Created!</span>',
+            icon: "success",
+            draggable: true,
+            background: "#0F172A",
+          });
+        }
+      });
+  };
+  // handle github registration
+  const handleGithubLogin = () => {
+  githubLogin()
+    .then((result) => {
+      const user = result.user;
+      console.log(user);
+
+    
+    })
+    .catch((error) => {
+      console.log(error.message);
+    });
+};
+  // handle google registration
+  const handleGoogleLogin = () => {
+    googleLogin()
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+      })
+      .catch((error) => {
+        console.log(error.message);
       });
   };
 
@@ -114,7 +139,7 @@ const Register = () => {
               <label className="block text-sm/6 font-medium text-gray-100">
                 Upload Photo
               </label>
-               <div className="mt-2">
+              <div className="mt-2">
                 <input
                   id="photo"
                   name="photoURL"
@@ -167,7 +192,7 @@ const Register = () => {
 
           <div className="mt-10 flex gap-4 text-center text-sm/6 text-gray-400">
             <button
-              href="#"
+              onClick={handleGoogleLogin}
               className="flex-1 flex items-center justify-center gap-3 h-10 px-3 py-2
     rounded-md text-white font-semibold text-sm cursor-pointer
     bg-white/10 hover:bg-white/20 transition
@@ -195,7 +220,7 @@ const Register = () => {
               <span>Google</span>
             </button>
             <button
-              href="#"
+              onClick={handleGithubLogin}
               className="flex-1 flex items-center justify-center gap-3 h-10 px-3 py-2
     rounded-md text-white font-semibold text-sm cursor-pointer
     bg-white/10 hover:bg-white/20 transition

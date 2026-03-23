@@ -1,8 +1,9 @@
 import React, { useContext } from "react";
 import AuthContext from "../../context/AuthContext/AuthContext";
+import { Link } from "react-router-dom";
 
 const Login = () => {
-  const {loginUser} = useContext(AuthContext);
+  const {loginUser , googleLogin , githubLogin} = useContext(AuthContext);
   // handle login
   const handleLogin = (e)=>{
     e.preventDefault();
@@ -102,8 +103,8 @@ const Login = () => {
           </div>
 
           <div className="mt-10 flex gap-4 text-center text-sm/6 text-gray-400">
-            <button
-              href="#"
+            <Link to="/" onClick={googleLogin}
+            
               className="flex-1 flex items-center justify-center gap-3 h-10 px-3 py-2
     rounded-md text-white font-semibold text-sm cursor-pointer
     bg-white/10 hover:bg-white/20 transition
@@ -129,9 +130,9 @@ const Login = () => {
               </svg>
 
               <span>Google</span>
-            </button>
-            <button
-              href="#"
+            </Link>
+            <Link to="/"
+              onClick={githubLogin}
               className="flex-1 flex items-center justify-center gap-3 h-10 px-3 py-2
     rounded-md text-white font-semibold text-sm cursor-pointer
     bg-white/10 hover:bg-white/20 transition
@@ -151,7 +152,7 @@ const Login = () => {
               </svg>
 
               <span>GitHub</span>
-            </button>
+            </Link>
 
            
           </div>
