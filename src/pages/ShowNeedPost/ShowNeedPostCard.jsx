@@ -55,7 +55,6 @@ const ShowNeedPostCard = ({ job }) => {
             <FaRegHeart className={`text-sm transition-all duration-300 ${isLiked ? "fill-red-500 text-red-500" : "text-white"}`} />
           </button>
         </div>
-
         {/* Content - Flexible Height */}
         <div className="p-4 flex flex-col flex-1">
           {/* Title */}

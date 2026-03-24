@@ -8,6 +8,8 @@ import AddNeedPost from "../pages/NeedPost/AddNeedPost";
 import ShowNeedPost from "../pages/ShowNeedPost/ShowNeedPost";
 import AllPost from "../pages/AllPost/AllPost";
 import JobDetails from "../pages/Home/JobDetails/JobDetails";
+import JobApply from "../pages/JobApply/JobApply";
+import MyApplications from "../pages/MyApplications/MyApplications";
 
 
 const router = createBrowserRouter([
@@ -45,7 +47,15 @@ const router = createBrowserRouter([
        path:"/jobs/:id",
       element:<JobDetails></JobDetails>,
       loader:({params})=> fetch(`http://localhost:5000/jobs/${params.id}`)
-     }
+     },
+    {
+        path: 'jobApply/:id',
+        element: <JobApply></JobApply>
+      },
+      {
+        path:'/myApplications',
+        element:<MyApplications></MyApplications>
+      }
     ]
     
   },

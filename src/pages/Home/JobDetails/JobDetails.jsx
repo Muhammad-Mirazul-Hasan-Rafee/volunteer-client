@@ -1,5 +1,5 @@
 import React from "react";
-import { useLoaderData } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 import {
   FaMapMarkerAlt,
   FaEnvelope,
@@ -343,9 +343,9 @@ const JobDetails = () => {
                   </div>
                 </div>
 
-                <button className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-medium shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
+                  <Link to={`/jobApply/${_id}`} className="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-xl font-medium shadow-lg shadow-purple-500/25 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
                   Apply Now
-                </button>
+                </Link>
               </div>
             </div>
           </div>
