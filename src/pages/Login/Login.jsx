@@ -14,6 +14,7 @@ const Login = () => {
       // user login
   loginUser(email , password)
   .then(data=> {
+   
     console.log('user logged in', data.user.email);
   })
   };

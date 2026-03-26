@@ -10,6 +10,8 @@ const AuthProvider = ({children})=>{
 const googleProvider = new GoogleAuthProvider();
 const githubProvider = new GithubAuthProvider();
 
+
+
     // create user
     const createUser = (email, password)=>{
         setLoading(true);
@@ -19,6 +21,7 @@ const githubProvider = new GithubAuthProvider();
     // Login user
     const loginUser = (email, password)=>{
         setLoading(true);
+      
         return signInWithEmailAndPassword(auth , email , password);
     };
     // Google login

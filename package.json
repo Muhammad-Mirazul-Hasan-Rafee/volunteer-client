@@ -12,9 +12,11 @@
   "dependencies": {
     "@headlessui/react": "^2.2.9",
     "@heroicons/react": "^2.2.0",
+    "axios": "^1.13.6",
     "firebase": "^12.10.0",
     "flowbite-react": "^0.12.17",
     "flyonui": "^2.4.1",
+    "jsonwebtoken": "^9.0.3",
     "localforage": "^1.10.0",
     "lottie-react": "^2.4.1",
     "match-sorter": "^8.2.0",

@@ -26,7 +26,7 @@ const JobApply = () => {
 
     console.log(jobApplication);
 
-    fetch("http://localhost:5000/job-application", {
+    fetch("http://localhost:5000/job-applications", {
       method: "POST",
       headers: {
         "content-type": "application/json",

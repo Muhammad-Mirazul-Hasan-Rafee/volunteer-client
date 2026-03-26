@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import {
   Disclosure,
   DisclosureButton,
@@ -12,19 +12,29 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import AuthContext from "../../../context/AuthContext/AuthContext";
 import { Link } from "react-router-dom";
+import useAuth from "../../../hooks/useAuth";
 
 const navigation = [
   { name: "Home", href: "/", current: true },
   { name: "All volunteer Need posts", href: "/allpost", current: false },
   { name: "Volunteer Needs Now", href: "/neednow", current: false },
-  { name: "Calendar", href: "#", current: false },
+  { name: "My Applications", href: "/myApplications", current: false },
 ];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 const Navbar = () => {
-  const { user , logOutUser} = useContext(AuthContext);
+  const { loading , user , logOutUser} = useAuth();
+
+  if (loading) {
+    return (
+      <div className="bg-gray-800 h-16 flex items-center justify-center">
+        <p className="text-white">Loading...</p>
+      </div>
+    );
+  }
+
 
   // handle logout
   const handleLogout = ()=>{
