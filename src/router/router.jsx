@@ -10,6 +10,7 @@ import AllPost from "../pages/AllPost/AllPost";
 import JobDetails from "../pages/Home/JobDetails/JobDetails";
 import JobApply from "../pages/JobApply/JobApply";
 import MyApplications from "../pages/MyApplications/MyApplications";
+import PrivateRoute from "./PrivateRoute";
 
 
 const router = createBrowserRouter([
@@ -32,11 +33,11 @@ const router = createBrowserRouter([
       },
       {
         path:"/addpost",
-        element:<AddNeedPost></AddNeedPost>,
+        element:<PrivateRoute><AddNeedPost></AddNeedPost></PrivateRoute>,
       },
       {
         path:"/neednow",
-        element:<ShowNeedPost></ShowNeedPost>,
+        element:<PrivateRoute><ShowNeedPost></ShowNeedPost></PrivateRoute>,
         loader:()=>fetch('http://localhost:5000/jobs'),
       },
       {
