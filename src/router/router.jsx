@@ -43,6 +43,7 @@ const router = createBrowserRouter([
       {
         path:"/allpost",
         element:<AllPost></AllPost>,
+        // loader:()=>fetch('http://localhost:5000/jobs'),
       },
      {
        path:"/jobs/:id",

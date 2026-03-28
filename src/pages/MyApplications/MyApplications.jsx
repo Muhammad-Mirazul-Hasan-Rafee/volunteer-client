@@ -61,7 +61,7 @@ const MyApplications = () => {
   };
 
   return (
-    <div className="bg-slate-900">
+    <div className="bg-gray-900">
       <br />
       {jobs.length === 0 ? (
         <div>

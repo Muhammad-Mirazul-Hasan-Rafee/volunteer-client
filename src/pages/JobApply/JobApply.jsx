@@ -53,7 +53,7 @@ const JobApply = () => {
   };
 
   return (
-    <div className="bg-slate-900 min-h-screen text-white py-10 px-4">
+    <div className="bg-gray-900 min-h-screen text-white py-10 px-4">
       <h3 className="text-center text-yellow-400 font-bold max-w-xl mx-auto mt-2">
         Please provide your professional links and resume. We’ll review your
         application and get back to you soon.
