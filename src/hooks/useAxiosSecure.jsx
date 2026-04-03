@@ -10,30 +10,27 @@ const axiosInstance = axios.create({
 });
 
 const useAxiosSecure = () => {
-    const {signOutUser} = useAuth();
+    const {logOutUser} = useAuth();
     const navigate = useNavigate();
 
-    useEffect(()=>{
-        axiosInstance.interceptors.response.use(response => {
-            return response;
-        },
-        error => {
-            console.log('error caught in interceptor' , error);
-            if (error.response?.status === 401 || error.response?.status === 403){
-                 console.log('Need to logout the user');
-                 signOutUser()
-                 .then(()=>{
-                     console.log('logged out user!');
-                    navigate('/login');
-                 })
-                 .catch((error)=>{
-                    console.log(error);
-                 })
-            }
-            return  Promise.reject(error);
-        }
-    )
-    },[navigate , signOutUser]);
+   useEffect(() => {
+  const interceptor = axiosInstance.interceptors.response.use(
+    response => response,
+    error => {
+      if (error.response?.status === 401 || error.response?.status === 403) {
+       logOutUser()
+          .then(() => navigate('/login'))
+          .catch(console.log);
+      }
+      return Promise.reject(error);
+    }
+  );
+
+  return () => {
+    axiosInstance.interceptors.response.eject(interceptor);
+  };
+
+}, [navigate, logOutUser]);
     return axiosInstance;
 };
 

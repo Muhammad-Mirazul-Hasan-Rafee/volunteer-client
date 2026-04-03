@@ -8,8 +8,8 @@ const JobCard = ({job}) => {
   ? job.description.join(" ")
   : job.description || "";
     return (
-    <div className="relative bg-gradient-to-br from-slate-800 via-slate-900 to-gray-900
-border border-gray-600 rounded-2xl p-6 
+    <div className="m-8 relative bg-gradient-to-br from-slate-800 via-slate-900 to-gray-900
+border border-gray-600 rounded-2xl p-12 
 hover:shadow-2xl hover:shadow-indigo-500/10 
 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden">
 

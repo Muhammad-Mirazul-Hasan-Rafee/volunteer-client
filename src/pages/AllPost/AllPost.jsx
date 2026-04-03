@@ -71,7 +71,7 @@ const AllPost = () => {
 
       {/* ................................All job cards........................................... */}
 {
-  jobs.map((job)=> <JobCard job={job} key={job._id}></JobCard>)
+  jobs.map((job)=> <JobCard  job={job} key={job._id}></JobCard>)
 }
     </div>
   );

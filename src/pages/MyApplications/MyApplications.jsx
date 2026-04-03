@@ -2,29 +2,33 @@ import React, { useEffect, useState } from "react";
 import useAuth from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import MyApplicationTable from "./MyApplicationTable";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
 
 const MyApplications = () => {
-  const { user, loading } = useAuth();
+  const { user} = useAuth();
   const [jobs, setJobs] = useState([]);
 
+  const axiosSecure = useAxiosSecure();
+
   useEffect(() => {
-    if (!user?.email) {
-      return;
-    }
-    fetch(`http://localhost:5000/job-applications?email=${user.email}`)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-        setJobs(data);
+    if (!user?.email) return;
+   
+
+    axiosSecure
+      .get("/job-applications")
+      .then((res) => {
+        if (Array.isArray(res.data)) {
+          setJobs(res.data);
+        } else {
+          setJobs([]);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setJobs([]);
       });
-  }, [user]);
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center">
-        <span className="loading loading-ring loading-xl"></span>
-      </div>
-    );
-  }
+  }, [user, axiosSecure]);
 
   // Delete application by user
   const deleteApplication = (_id) => {
@@ -40,15 +44,10 @@ const MyApplications = () => {
       confirmButtonText: "Withdraw application!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:5000/jobs/${_id}`, { method: "DELETE" })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.deletedCount > 0) {
-              const restApplications = jobs.filter((job) => job._id !== _id);
-              setJobs(restApplications);
-            }
-          });
-        Swal.fire({
+        axiosSecure.delete(`/job-applications/${_id}`).then((res) => {
+          if (res.data.deletedCount > 0) {
+            setJobs((prev) => prev.filter((job) => job._id !== _id));
+             Swal.fire({
           title: "Application Withdrawn",
           text: "Your application has been successfully removed.",
           icon: "success",
@@ -56,6 +55,9 @@ const MyApplications = () => {
           color: "#e2e8f0",
           confirmButtonColor: "#22c55e", // green-500
         });
+          }
+        });
+       
       }
     });
   };
@@ -82,19 +84,19 @@ const MyApplications = () => {
         </div>
       ) : (
         <div>
-      <p className="font-semibold text-white">
-          Total: You’ve applied to{" "}
-          <span className="text-yellow-400">{jobs.length}</span> opportunities.
-          All your applications are organized here for easy tracking.🔥
-        </p>
-        <br />
-
-
-        
+          <p className="font-semibold text-white">
+            Total: You’ve applied to{" "}
+            <span className="text-yellow-400">{jobs.length}</span>{" "}
+            opportunities. All your applications are organized here for easy
+            tracking.🔥
+          </p>
+          <br />
 
           {/* Table */}
           <div className="mb-14 relative overflow-x-auto bg-slate-900 shadow-xs rounded-base border-black">
-            <h4 className="font-semibold text-white text-center p-4">Here are your applications</h4>
+            <h4 className="font-semibold text-white text-center p-4">
+              Here are your applications
+            </h4>
             <table className="w-full text-sm text-left rtl:text-right text-body border-2 border-black">
               <thead className="text-sm text-body bg-slate-900 border border-black">
                 <tr className="shadow-2xl">
@@ -123,38 +125,12 @@ const MyApplications = () => {
               </thead>
               <tbody>
                 {jobs.map((job, idx) => (
-                  <tr
+                  <MyApplicationTable
+                    job={job}
+                    deleteApplication={deleteApplication}
                     key={job._id}
-                    className="bg-neutral-primary-soft border border-black hover:bg-neutral-secondary-medium"
-                  >
-                    <th className="px-6 py-4 font-medium text-white text-center shadow-xl">
-                      {idx + 1}
-                    </th>
-                    <th className="px-6 py-4 font-medium text-white text-center shadow-xl">
-                      {job.title}
-                    </th>
-                    <td className="px-6 py-4 text-white text-center">
-                      {job.category}
-                    </td>
-                    <td className="px-6 py-4 text-white text-center">
-                      {job.location}
-                    </td>
-                    <td className="px-6 py-4 text-white text-center">
-                      {job.salary.min} {job.salary.currency} - {job.salary.max}{" "}
-                      {job.salary.currency}
-                    </td>
-                    <td className="px-6 py-4 text-white text-center">
-                      {job.deadline}
-                    </td>
-                    <td className="px-6 py-4 text-white text-right">
-                      <button
-                        onClick={() => deleteApplication(job._id)}
-                        className="text-red-700 font-extrabold"
-                      >
-                        X
-                      </button>
-                    </td>
-                  </tr>
+                    index={idx}
+                  ></MyApplicationTable>
                 ))}
               </tbody>
             </table>
