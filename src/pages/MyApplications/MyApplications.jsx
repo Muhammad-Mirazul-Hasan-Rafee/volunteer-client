@@ -3,32 +3,35 @@ import useAuth from "../../hooks/useAuth";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import MyApplicationTable from "./MyApplicationTable";
-import useAxiosSecure from "../../hooks/useAxiosSecure";
+//import useAxiosSecure from "../../hooks/useAxiosSecure";
+import axios from "axios";
 
 const MyApplications = () => {
   const { user} = useAuth();
   const [jobs, setJobs] = useState([]);
 
-  const axiosSecure = useAxiosSecure();
-
+  //const axiosSecure = useAxiosSecure();
+ console.log("in application" , user?.email);
   useEffect(() => {
     if (!user?.email) return;
    
+    // axiosSecure
+    //   .get("/job-applications")
+    //   .then((res) => {
+    //     if (Array.isArray(res.data)) {
+    //       setJobs(res.data);
+    //     } else {
+    //       setJobs([]);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log(err);
+    //     setJobs([]);
+    //   });
 
-    axiosSecure
-      .get("/job-applications")
-      .then((res) => {
-        if (Array.isArray(res.data)) {
-          setJobs(res.data);
-        } else {
-          setJobs([]);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setJobs([]);
-      });
-  }, [user, axiosSecure]);
+    axios.get(`http://localhost:5000/job-applications?email=${user.email}`, {withCredentials: true})
+    .then((res)=> setJobs(res.data))
+  }, [user?.email]);
 
   // Delete application by user
   const deleteApplication = (_id) => {
@@ -44,7 +47,7 @@ const MyApplications = () => {
       confirmButtonText: "Withdraw application!",
     }).then((result) => {
       if (result.isConfirmed) {
-        axiosSecure.delete(`/job-applications/${_id}`).then((res) => {
+        axios.delete(`/job-applications/${_id}`).then((res) => {
           if (res.data.deletedCount > 0) {
             setJobs((prev) => prev.filter((job) => job._id !== _id));
              Swal.fire({
