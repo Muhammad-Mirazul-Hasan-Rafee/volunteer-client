@@ -9,7 +9,8 @@ const axiosInstance = axios.create({
      
 });
 
-const useAxiosSecure = () => {
+
+const useAxiosSecure = () => { 
     const {logOutUser} = useAuth();
     const navigate = useNavigate();
 
