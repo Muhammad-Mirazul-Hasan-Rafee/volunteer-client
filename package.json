@@ -16,6 +16,7 @@
     "@heroicons/react": "^2.2.0",
     "@mui/material": "^7.3.9",
     "axios": "^1.13.6",
+    "dotenv": "^17.4.0",
     "firebase": "^12.10.0",
     "flowbite-react": "^0.12.17",
     "flyonui": "^2.4.1",

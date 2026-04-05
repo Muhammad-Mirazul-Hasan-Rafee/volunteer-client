@@ -16,7 +16,7 @@ const AllPost = () => {
   //     setJobs(filtered);
 
   useEffect(() => {
-    fetch("http://localhost:5000/jobs")
+    fetch("https://volunteer-server-flame.vercel.app/jobs")
       .then((res) => res.json())
       .then((data) => setJobs(data));
   }, []);

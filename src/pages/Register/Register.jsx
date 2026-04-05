@@ -25,7 +25,7 @@ const Register = () => {
       });
 
     // fetching info
-    fetch("http://localhost:5000/users", {
+    fetch("https://volunteer-server-flame.vercel.app/users", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify(initialData),

@@ -98,7 +98,7 @@ const AddNeedPost = () => {
 
     console.log("Submitting:", postData);
 
-    fetch("http://localhost:5000/jobs", {
+    fetch("https://volunteer-server-flame.vercel.app/jobs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

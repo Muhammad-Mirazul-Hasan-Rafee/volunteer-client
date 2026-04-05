@@ -38,17 +38,17 @@ const router = createBrowserRouter([
       {
         path:"/neednow",
         element:<PrivateRoute><ShowNeedPost></ShowNeedPost></PrivateRoute>,
-        loader:()=>fetch('http://localhost:5000/jobs'),
+        loader:()=>fetch('https://volunteer-server-flame.vercel.app/jobs'),
       },
       {
         path:"/allpost",
         element:<AllPost></AllPost>,
-        // loader:()=>fetch('http://localhost:5000/jobs'),
+        // loader:()=>fetch('https://volunteer-server-flame.vercel.app/jobs'),
       },
      {
        path:"/jobs/:id",
       element:<JobDetails></JobDetails>,
-      loader:({params})=> fetch(`http://localhost:5000/jobs/${params.id}`)
+      loader:({params})=> fetch(`https://volunteer-server-flame.vercel.app/jobs/${params.id}`)
      },
     {
         path: 'jobApply/:id',
