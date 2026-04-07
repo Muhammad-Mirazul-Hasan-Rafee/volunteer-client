@@ -16,7 +16,9 @@ const AllPost = () => {
   //     setJobs(filtered);
 
   useEffect(() => {
-    fetch("https://volunteer-server-flame.vercel.app/jobs")
+    fetch(
+      "https://volunteer-server-flame.vercel.app/jobs"
+    )
       .then((res) => res.json())
       .then((data) => setJobs(data));
   }, []);
@@ -70,9 +72,9 @@ const AllPost = () => {
       </div>
 
       {/* ................................All job cards........................................... */}
-{
-  jobs.map((job)=> <JobCard  job={job} key={job._id}></JobCard>)
-}
+      {jobs.map((job) => (
+        <JobCard job={job} key={job._id}></JobCard>
+      ))}
     </div>
   );
 };
