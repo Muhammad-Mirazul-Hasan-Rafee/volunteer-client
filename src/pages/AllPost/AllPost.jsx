@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import JobCard from "./JobCard";
+import axios from "axios";
 
 const AllPost = () => {
-  const [jobs, setJobs] = useState([]);
+
+  const [sort, setSort] = useState(false);
+    const [jobs, setJobs] = useState([]);
 
   //  const [searchText, setSearchText] = useState("");
 
@@ -16,13 +19,11 @@ const AllPost = () => {
   //     setJobs(filtered);
 
   useEffect(() => {
-    fetch(
-      "https://volunteer-server-flame.vercel.app/jobs"
-    )
-      .then((res) => res.json())
-      .then((data) => setJobs(data));
-  }, []);
-  console.log(jobs);
+    axios.get(`http://localhost:5000/jobs?sort=${sort}`).then((res)=>{
+      setJobs(res.data);
+    });
+  }, [sort]);
+ 
   return (
     <div className="bg-gray-900">
       <br />
@@ -61,6 +62,7 @@ const AllPost = () => {
           </label>
         </form>
       </div>
+      <div className="flex justify-center md:flex md:justify-end md:p-3"><button onClick={()=>setSort(!sort)} className={`btn btn-outline btn-primary bg-slate-500 p-2 ${sort && "text-green-950 font-semibold bg-slate-100"}`}>{sort == true ? "sorted by salary" : "sort by salary"}</button></div>
 
       <div className="text-center text-white py-10">
         <h2 className="text-2xl font-bold mb-2">

@@ -51,7 +51,7 @@ hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between o
     
     <div className="text-xs">
       <p className="text-emerald-400 font-medium">
-        {salary.min} - {salary.max} {salary.currency}
+        {salary?.min} - {salary?.max} {salary?.currency}
       </p>
       <p className="text-rose-400 mt-1">Deadline: {deadline}</p>
     </div>
