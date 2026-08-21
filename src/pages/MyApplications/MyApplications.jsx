@@ -18,7 +18,7 @@ const MyApplications = () => {
     .then((res)=> setJobs(res.data))
 
 
-  },[user.email]);
+  },[axiosSecure, user.email]);
 
   // Delete application by user
   const deleteApplication = (_id) => {
