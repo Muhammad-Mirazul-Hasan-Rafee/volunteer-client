@@ -1,10 +1,11 @@
 import React, { useContext } from "react";
 import AuthContext from "../../context/AuthContext/AuthContext";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const { createUser, googleLogin, githubLogin } = useContext(AuthContext);
-  // const [preview, setPreview] = useState(null);
+  const navigate = useNavigate();
 
   // handle registration
   const handleRegister = (e) => {
@@ -15,70 +16,145 @@ const Register = () => {
 
     const { email, password } = initialData;
 
-    // create user
+    // create user with Firebase
     createUser(email, password)
       .then((result) => {
-        console.log(result);
-      })
-      .catch((error) => {
-        console.log(error.message);
-      });
+        console.log('User created:', result.user);
+        
+        // After Firebase user creation, save user info to MongoDB
+        const userInfo = {
+          name: initialData.name,
+          email: initialData.email,
+          photoURL: initialData.photoURL,
+          createdAt: new Date().toISOString()
+        };
 
-    // fetching info
-    fetch("https://volunteer-server-flame.vercel.app/users", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(initialData),
-    })
+        // Fetch to save user in MongoDB
+        return fetch("http://localhost:5000/users", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(userInfo),
+        });
+      })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
-        if (data.insertedId) {
+        console.log('User saved to DB:', data);
+        if (data.insertedId || data.acknowledged) {
           Swal.fire({
-            title:
-              '<span style="color:#FFFFFF">Welcome!<br/>Account Created!</span>',
+            title: '<span style="color:#FFFFFF">Welcome!<br/>Account Created!</span>',
             icon: "success",
             draggable: true,
             background: "#0F172A",
+            confirmButtonColor: "#3B82F6",
+          }).then(() => {
+            // Redirect to Home after user clicks OK
+            navigate("/");
           });
         }
+      })
+      .catch((error) => {
+        console.error('Registration error:', error.message);
+        Swal.fire({
+          title: "Error!",
+          text: error.message,
+          icon: "error",
+          background: "#0F172A",
+          color: "#fff",
+        });
       });
   };
+
   // handle github registration
   const handleGithubLogin = () => {
-  githubLogin()
-    .then((result) => {
-      const user = result.user;
-      console.log(user);
+    githubLogin()
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
 
-    
-    })
-    .catch((error) => {
-      console.log(error.message);
-    });
-};
+        // Save GitHub user to MongoDB
+        const userInfo = {
+          name: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+          createdAt: new Date().toISOString()
+        };
+
+        return fetch("http://localhost:5000/users", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(userInfo),
+        });
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('User saved:', data);
+        Swal.fire({
+          title: '<span style="color:#FFFFFF">Welcome!<br/>Account Created!</span>',
+          icon: "success",
+          draggable: true,
+          background: "#0F172A",
+          confirmButtonColor: "#3B82F6",
+        }).then(() => {
+          navigate("/");
+        });
+      })
+      .catch((error) => {
+        console.log(error.message);
+        Swal.fire({
+          title: "Error!",
+          text: error.message,
+          icon: "error",
+          background: "#0F172A",
+          color: "#fff",
+        });
+      });
+  };
+
   // handle google registration
   const handleGoogleLogin = () => {
     googleLogin()
       .then((result) => {
         const user = result.user;
         console.log(user);
+
+        // Save Google user to MongoDB
+        const userInfo = {
+          name: user.displayName,
+          email: user.email,
+          photoURL: user.photoURL,
+          createdAt: new Date().toISOString()
+        };
+
+        return fetch("http://localhost:5000/users", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(userInfo),
+        });
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('User saved:', data);
+        Swal.fire({
+          title: '<span style="color:#FFFFFF">Welcome!<br/>Account Created!</span>',
+          icon: "success",
+          draggable: true,
+          background: "#0F172A",
+          confirmButtonColor: "#3B82F6",
+        }).then(() => {
+          navigate("/");
+        });
       })
       .catch((error) => {
         console.log(error.message);
+        Swal.fire({
+          title: "Error!",
+          text: error.message,
+          icon: "error",
+          background: "#0F172A",
+          color: "#fff",
+        });
       });
   };
-
-  // handle image
-  // const handlePhoto = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     setPreview(URL.createObjectURL(file));
-  //   }
-  // };
-  // const removePhoto = () => {
-  //   setPreview(null);
-  // };
 
   return (
     <div className="h-full bg-gray-900">
@@ -234,8 +310,8 @@ const Register = () => {
               >
                 <path
                   d="M10 0C4.477 0 0 4.484 0 10.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.942.359.31.678.921.678 1.856 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0020 10.017C20 4.484 15.522 0 10 0z"
-                  clip-rule="evenodd"
-                  fill-rule="evenodd"
+                  clipRule="evenodd"
+                  fillRule="evenodd"
                 ></path>
               </svg>
 
@@ -243,12 +319,12 @@ const Register = () => {
             </button>
           </div>
           <p className="mt-10 text-center text-sm/6 text-gray-400">
-            Don't have an account?{" "}
+            Already have an account?{" "}
             <a
-              href="#"
+              href="/login"
               className="font-semibold text-indigo-400 hover:text-indigo-300"
             >
-              Log in Here!
+              Login Here!
             </a>
           </p>
         </div>
