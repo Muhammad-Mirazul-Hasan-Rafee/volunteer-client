@@ -37,7 +37,7 @@ const router = createBrowserRouter([
       {
         path: "/neednow",
         element: <PrivateRoute><ShowNeedPost></ShowNeedPost></PrivateRoute>,
-        loader: () => fetch('http://localhost:5000/jobs'),
+        loader: () => fetch('https://volunteer-server-wine.vercel.app/jobs'),
       },
       {
         path: "/allpost",
@@ -46,7 +46,7 @@ const router = createBrowserRouter([
       {
         path: "/jobs/:id",
         element: <JobDetails></JobDetails>,
-        loader: ({ params }) => fetch(`http://localhost:5000/jobs/${params.id}`),
+        loader: ({ params }) => fetch(`https://volunteer-server-wine.vercel.app/jobs/${params.id}`),
       },
       {
         // Add leading slash here!

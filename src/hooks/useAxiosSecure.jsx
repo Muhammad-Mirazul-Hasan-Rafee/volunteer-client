@@ -4,7 +4,7 @@ import useAuth from './useAuth';
 import { useNavigate } from 'react-router-dom';
 
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:5000',  // Changed from vercel to localhost
+    baseURL: 'https://volunteer-server-wine.vercel.app',  
     withCredentials: true,
     timeout: 10000
 });

@@ -55,7 +55,7 @@ const AuthProvider = ({children})=>{
                 
                 // Change this to localhost
                 axios.post(
-                    'http://localhost:5000/jwt',  // Changed from vercel to localhost
+                    'https://volunteer-server-wine.vercel.app/jwt',  // Changed from vercel to localhost
                     userData, 
                     {
                         withCredentials: true,
