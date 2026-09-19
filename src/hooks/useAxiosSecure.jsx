@@ -1,41 +1,52 @@
 import axios from 'axios';
-import { useEffect } from 'react';
 import useAuth from './useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
 
-const axiosInstance = axios.create({
-    baseURL: 'https://volunteer-server-wine.vercel.app',  
-    withCredentials: true,
-    timeout: 10000
-});
+const useAxiosSecure = () => {
+  const { logOutUser } = useAuth();
+  const navigate = useNavigate();
 
-const useAxiosSecure = () => { 
-    const { logOutUser } = useAuth();
-    const navigate = useNavigate();
+  // useRef keeps one stable instance per hook caller
+  const axiosSecureRef = useRef(
+    axios.create({
+      baseURL: 'http://localhost:5000',
+      withCredentials: true,
+      timeout: 10000,
+    })
+  );
 
-    useEffect(() => {
-        const interceptor = axiosInstance.interceptors.response.use(
-            response => response,
-            error => {
-                console.log('Error:', error.message, error.response?.status);
-                
-                // Only logout on 401 (unauthorized)
-                if (error.response?.status === 401) {
-                    logOutUser()
-                        .then(() => navigate('/login'))
-                        .catch(console.log);
-                }
-                
-                return Promise.reject(error);
-            }
-        );
+  useEffect(() => {
+    const instance = axiosSecureRef.current;
 
-        return () => {
-            axiosInstance.interceptors.response.eject(interceptor);
-        };
-    }, [navigate, logOutUser]);
-    
-    return axiosInstance;
+    const interceptor = instance.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const status = error.response?.status;
+        const url = error.config?.url || '';
+
+        console.log('Axios error:', status, url);
+
+        // Only logout on 401 from protected endpoints (never from /jwt itself)
+        if (status === 401 && !url.includes('/jwt')) {
+          try {
+            await logOutUser();
+          } catch (e) {
+            console.error('Logout failed:', e);
+          }
+          navigate('/login', { replace: true });
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      instance.interceptors.response.eject(interceptor);
+    };
+  }, [navigate, logOutUser]);
+
+  return axiosSecureRef.current;
 };
 
 export default useAxiosSecure;

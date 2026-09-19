@@ -41,40 +41,30 @@ const AuthProvider = ({children})=>{
         return signOut(auth);
     }
 
-    useEffect(()=>{
-        const unsubscribe = onAuthStateChanged(auth , (currentUser)=>{
-            setUser(currentUser);
-            console.log('state captured' , currentUser?.email);
-            
-            // Set loading to false immediately
-            setLoading(false);
-            
-            // Try to set JWT cookie in background
-            if(currentUser?.email){
-                const userData = {email: currentUser.email};
-                
-                // Change this to localhost
-                axios.post(
-                    'https://volunteer-server-wine.vercel.app/jwt',  // Changed from vercel to localhost
-                    userData, 
-                    {
-                        withCredentials: true,
-                        timeout: 5000
-                    }
-                )
-                .then((res)=>{
-                    console.log('login token' , res.data);
-                })
-                .catch((error)=>{
-                    console.error('JWT API call failed:', error.message);
-                });
-            }
-        })
-        
-        return ()=>{
-            unsubscribe();
-        }
-    },[])
+   useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    setUser(currentUser);
+    console.log('state captured', currentUser?.email);
+
+    if (currentUser?.email) {
+      try {
+        await axios.post(
+          'http://localhost:5000/jwt',
+          { email: currentUser.email },
+          { withCredentials: true, timeout: 5000 }
+        );
+        console.log('JWT cookie set');
+      } catch (err) {
+        console.error('JWT API call failed:', err.message);
+      }
+    }
+
+    // Only stop loading AFTER JWT attempt resolves
+    setLoading(false);
+  });
+
+  return () => unsubscribe();
+}, []);
 
     const authInfo = {
         createUser, 

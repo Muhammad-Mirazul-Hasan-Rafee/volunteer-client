@@ -15,49 +15,68 @@ import PrivateRoute from "./PrivateRoute";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <MainLayout></MainLayout>,
+    element: <MainLayout />,
     errorElement: <h2>Router not found!!</h2>,
     children: [
+      // ---------- PUBLIC ROUTES ----------
       {
         path: "/",
-        element: <Home></Home>,
+        element: <Home />,
       },
       {
         path: "/login",
-        element: <Login></Login>,
+        element: <Login />,
       },
       {
         path: "/register",
-        element: <Register></Register>,
-      },
-      {
-        path: "/addpost",
-        element: <PrivateRoute><AddNeedPost></AddNeedPost></PrivateRoute>,
-      },
-      {
-        path: "/neednow",
-        element: <PrivateRoute><ShowNeedPost></ShowNeedPost></PrivateRoute>,
-        loader: () => fetch('https://volunteer-server-wine.vercel.app/jobs'),
+        element: <Register />,
       },
       {
         path: "/allpost",
-        element: <AllPost></AllPost>,
+        element: <AllPost />,
       },
       {
         path: "/jobs/:id",
-        element: <JobDetails></JobDetails>,
-        loader: ({ params }) => fetch(`https://volunteer-server-wine.vercel.app/jobs/${params.id}`),
+        element: <JobDetails />,
+        loader: ({ params }) =>
+          fetch(`http://localhost:5000/jobs/${params.id}`),
+      },
+
+      // ---------- PRIVATE ROUTES ----------
+      {
+        path: "/addpost",
+        element: (
+          <PrivateRoute>
+            <AddNeedPost />
+          </PrivateRoute>
+        ),
       },
       {
-        // Add leading slash here!
-        path: '/jobApply/:id',
-        element: <JobApply></JobApply>
+        path: "/neednow",
+        element: (
+          <PrivateRoute>
+            <ShowNeedPost />
+          </PrivateRoute>
+        ),
+        loader: () => fetch("http://localhost:5000/jobs"),
       },
       {
-        path: '/myApplications',
-        element: <PrivateRoute><MyApplications></MyApplications></PrivateRoute>
-      }
-    ]
+        path: "/jobApply/:id",
+        element: (
+          <PrivateRoute>
+            <JobApply />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/myApplications",
+        element: (
+          <PrivateRoute>
+            <MyApplications />
+          </PrivateRoute>
+        ),
+      },
+    ],
   },
 ]);
 
