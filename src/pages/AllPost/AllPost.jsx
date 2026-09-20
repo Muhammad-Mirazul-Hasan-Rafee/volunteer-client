@@ -19,7 +19,7 @@ const AllPost = () => {
   //     setJobs(filtered);
 
   useEffect(() => {
-    axios.get(`https://volunteer-server-chi.vercel.app/jobs?sort=${sort}`).then((res)=>{
+    axios.get(`http://localhost:5000/jobs?sort=${sort}`).then((res)=>{
       setJobs(res.data);
     });
   }, [sort]);
