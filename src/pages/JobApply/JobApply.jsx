@@ -26,7 +26,7 @@ const JobApply = () => {
 
     console.log(jobApplication);
 
-    fetch("api/job-applications", {
+    fetch("https://volunteer-client-phi.vercel.app/job-applications", {
       method: "POST",
       headers: {
         "content-type": "application/json",

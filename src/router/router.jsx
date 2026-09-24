@@ -39,7 +39,7 @@ const router = createBrowserRouter([
         path: "/jobs/:id",
         element: <JobDetails />,
         loader: ({ params }) =>
-          fetch(`api/jobs/${params.id}`),
+          fetch(`https://volunteer-client-phi.vercel.app/jobs/${params.id}`),
       },
 
       // ---------- PRIVATE ROUTES ----------
@@ -58,7 +58,7 @@ const router = createBrowserRouter([
             <ShowNeedPost />
           </PrivateRoute>
         ),
-        loader: () => fetch("api/jobs"),
+        loader: () => fetch("https://volunteer-client-phi.vercel.app/jobs"),
       },
       {
         path: "/jobApply/:id",
