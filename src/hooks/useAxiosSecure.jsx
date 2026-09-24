@@ -10,7 +10,7 @@ const useAxiosSecure = () => {
   // useRef keeps one stable instance per hook caller
   const axiosSecureRef = useRef(
     axios.create({
-      baseURL: 'https://volunteer-client-phi.vercel.app',
+      baseURL: 'https://volunteer-server-chi.vercel.app',
       withCredentials: true,
       timeout: 10000,
     })

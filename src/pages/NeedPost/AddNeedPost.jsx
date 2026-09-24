@@ -98,7 +98,7 @@ const AddNeedPost = () => {
 
     console.log("Submitting:", postData);
 
-    fetch("https://volunteer-client-phi.vercel.app/jobs", {
+    fetch("https://volunteer-server-chi.vercel.app/jobs", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -30,7 +30,7 @@ const Register = () => {
         };
 
         // Fetch to save user in MongoDB
-        return fetch("https://volunteer-client-phi.vercel.app/users", {
+        return fetch("https://volunteer-server-chi.vercel.app/users", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify(userInfo),
@@ -79,7 +79,7 @@ const Register = () => {
           createdAt: new Date().toISOString()
         };
 
-        return fetch("https://volunteer-client-phi.vercel.app/users", {
+        return fetch("https://volunteer-server-chi.vercel.app/users", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify(userInfo),
@@ -125,7 +125,7 @@ const Register = () => {
           createdAt: new Date().toISOString()
         };
 
-        return fetch("https://volunteer-client-phi.vercel.app/users", {
+        return fetch("https://volunteer-server-chi.vercel.app/users", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify(userInfo),

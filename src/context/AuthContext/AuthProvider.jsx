@@ -49,7 +49,7 @@ const AuthProvider = ({children})=>{
     if (currentUser?.email) {
       try {
         await axios.post(
-          'https://volunteer-client-phi.vercel.app/jwt',
+          'https://volunteer-server-chi.vercel.app/jwt',
           { email: currentUser.email },
           { withCredentials: true, timeout: 5000 }
         );
