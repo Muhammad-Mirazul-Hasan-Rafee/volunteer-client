@@ -40,10 +40,10 @@ The client is designed around three principles:
 ## Capabilities
 
 - Email, Google, and GitHub authentication backed by Firebase. 🔑
-- Protected routes that redirect unauthenticated users to login and return them to their original destination afterward. 🛡️
+- Protected routes that redirect unauthenticated users to login and return them to the original destination afterward. 🛡️
 - Opportunity posting, browsing, and detail views. 📋
 - Application submission with a personal dashboard for tracking and managing submissions. 📊
-- Environment-aware API layer that works identically in development and production. 🌐
+- Environment-aware API layer that behaves identically in development and production. 🌐
 - A dark, distraction-free interface built with Tailwind. 🌙
 
 ---
@@ -67,7 +67,7 @@ Each directory has a single responsibility. Nothing cross-imports outside its la
 
 ## Environment
 
-Create a `.env` file at the project root with your own values:
+A `.env` file at the project root supplies the Firebase credentials:
 
 ```env
 VITE_FIREBASE_API_KEY=
@@ -79,7 +79,7 @@ VITE_FIREBASE_APP_ID=
 VITE_FIREBASE_MEASUREMENT_ID=
 ```
 
-These are populated from your Firebase project settings. Do not commit this file. 🔒
+Values are populated from the Firebase project settings and kept out of version control. 🔒
 
 ---
 
